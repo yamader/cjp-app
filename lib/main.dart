@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cjp/GeneratorPage.dart';
+import 'package:cjp/InfoPage.dart';
 
 void main() {
   runApp(const App());
@@ -10,34 +12,19 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '怪レい日本语',
-      home: const HomePage(title: '怪レい日本语'),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  void _incrementCounter() {
-    setState(() {
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
+      title: "怪レい日本语",
+      theme: ThemeData(
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+          }
+        ),
       ),
-      body: Text("贵樣!"),
+      routes: {
+        "/": (context) => GeneratorPage(),
+        "/info": (context) => InfoPage(),
+      },
+      initialRoute: '/',
     );
   }
 }
