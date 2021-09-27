@@ -8,23 +8,39 @@ class InfoPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("このアプリについて"),
-        centerTitle: true,
       ),
       body: Center(
         child: Column(
           children: [
             Expanded(
-              child: Container(
-                child: Text("ああああああああああああああああああああああ")
+              child: Column(
+                children: [
+                  Text("あ"),
+                ],
               ),
             ),
             Container(
-              margin: EdgeInsets.all(10),
-              child: Text("(c) 2021 YamaD"),
+              margin: EdgeInsets.only(top: 10,bottom: 15,),
+              child: Text(
+                "© 2021 YamaD",
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
             ),
           ],
         ),
       )
+    );
+  }
+}
+
+class InfoBlock extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
     );
   }
 }

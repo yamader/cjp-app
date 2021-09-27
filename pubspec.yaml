@@ -10,6 +10,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  js: ^0.6.3
+  share: ^2.0.4
+  fluttertoast: ^8.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter
