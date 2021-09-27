@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:share/share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:cjp/cjp.dart';
 
 class GeneratorPage extends StatefulWidget {
   const GeneratorPage({Key? key}) : super(key: key);
