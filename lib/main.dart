@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:cjp/GeneratorPage.dart';
 import 'package:cjp/InfoPage.dart';
 
-void main() {
-  runApp(const App());
-}
+void main() => runApp(App());
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -31,6 +26,7 @@ class App extends StatelessWidget {
         pageTransitionsTheme: const PageTransitionsTheme(
           builders: {
             TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
           },
         ),
       ),

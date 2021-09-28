@@ -5,8 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:cjp/cjp.dart';
 
 class GeneratorPage extends StatefulWidget {
-  const GeneratorPage({Key? key}) : super(key: key);
-
   @override
   State<GeneratorPage> createState() => _GeneratorPageState();
 }
@@ -17,8 +15,18 @@ class _GeneratorPageState extends State<GeneratorPage> {
 
   void _changeText(String val){
     setState((){
-      _resTextController.text=val;
+      _resTextController.text=CJP.generate(val);
     });
+  }
+
+  void _clipCopy() async {
+    if(_resTextController.text.length==0){
+      Fluttertoast.showToast(msg: "Empty");
+      return;
+    }
+    final data=ClipboardData(text: _resTextController.text);
+    await Clipboard.setData(data);
+    Fluttertoast.showToast(msg: "Copied");
   }
 
   @override
@@ -92,6 +100,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
                       maxLines: null,
                       expands: true,
                       readOnly: true,
+                      onTap: _clipCopy,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
@@ -135,51 +144,46 @@ class _GeneratorPageState extends State<GeneratorPage> {
                         ),
                       ),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        IconButton(
-                          onPressed: () async {
-                            final data=await Clipboard.getData(Clipboard.kTextPlain);
-                            if(data?.text==null){
-                              Fluttertoast.showToast(msg: "Couldn't paste");
-                              return;
-                            } else if(data?.text==""){
-                              Fluttertoast.showToast(msg: "Clipboard empty");
-                              return;
-                            } else {
-                              _inputTextController.text=data?.text??""; // nullチェック
-                              Fluttertoast.showToast(msg: "Pasted");
-                              _changeText(_inputTextController.text); // onChanged代わり
-                            }
-                          },
-                          icon: Icon(Icons.paste),
-                          color: Colors.white,
-                        ),
-                        IconButton(
-                          onPressed: (){
-                            if(_resTextController.text.length==0){
-                              Share.share("贵樣!");
-                              return;
-                            }
-                            Share.share(_resTextController.text);
-                          },
-                          icon: Icon(Icons.share),
-                        ),
-                        IconButton(
-                          onPressed: () async {
-                            if(_resTextController.text.length==0){
-                              Fluttertoast.showToast(msg: "Empty");
-                              return;
-                            }
-                            final data=ClipboardData(text: _resTextController.text);
-                            await Clipboard.setData(data);
-                            Fluttertoast.showToast(msg: "Copied");
-                          },
-                          icon: Icon(Icons.copy),
-                          color: Colors.white,
-                        ),
-                      ],
+                    Container(
+                      margin: EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          IconButton(
+                            onPressed: () async {
+                              final data=await Clipboard.getData(Clipboard.kTextPlain);
+                              if(data?.text==null){
+                                Fluttertoast.showToast(msg: "Couldn't paste");
+                                return;
+                              } else if(data?.text==""){
+                                Fluttertoast.showToast(msg: "Clipboard empty");
+                                return;
+                              } else {
+                                _inputTextController.text=data?.text??""; // どうして……
+                                Fluttertoast.showToast(msg: "Pasted");
+                                _changeText(_inputTextController.text);
+                              }
+                            },
+                            icon: Icon(Icons.paste),
+                            color: Colors.white,
+                          ),
+                          IconButton(
+                            onPressed: (){
+                              if(_resTextController.text.length==0){
+                                Share.share("贵樣!");
+                                return;
+                              }
+                              Share.share(_resTextController.text);
+                            },
+                            icon: Icon(Icons.share),
+                          ),
+                          IconButton(
+                            onPressed: _clipCopy,
+                            icon: Icon(Icons.copy),
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

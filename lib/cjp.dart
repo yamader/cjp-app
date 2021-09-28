@@ -1,85 +1,100 @@
 import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:tuple/tuple.dart';
+import 'package:flutter/services.dart';
 
-bool _isReady=false;
-dynamic _dictCommon,
-        _dictPNoun,
-        _dictKana,
-        _dictKanji,
-        _dictEmoji;
+typedef StrDict=Map<String,dynamic>; // ほんとは<String,String>にしたいんだけど……
+typedef IntPair=Tuple2<int,int>;
 
-Future<String> genCorrectJP({String text=""}) async {
-  if(!_isReady) {
-    _dictCommon=jsonDecode(await rootBundle.loadString(
-        "assets/cjp.js/dict/common.json"));
-    _dictPNoun=jsonDecode(await rootBundle.loadString(
-        "assets/cjp.js/dict/propernoun.json"));
-    _dictKana=jsonDecode(await rootBundle.loadString(
-        "assets/cjp.js/dict/kana.json"));
-    _dictKanji=jsonDecode(await rootBundle.loadString(
-        "assets/cjp.js/dict/kanji.json"));
-    _dictEmoji=jsonDecode(await rootBundle.loadString(
-        "assets/cjp.js/dict/emoji.json"));
-    _isReady=true;
+var _isDictReady=false;
+StrDict? _dictCommon,
+         _dictPNoun,
+         _dictKana,
+         _dictKanji,
+         _dictEmoji;
+
+class CJP {
+  static Future<void> loadDict() async {
+    if(!_isDictReady) {
+      await Future.wait([
+        rootBundle.loadString("assets/cjp.js/dict/common.json")
+          .then((d){_dictCommon=jsonDecode(d);}),
+        rootBundle.loadString("assets/cjp.js/dict/propernoun.json")
+          .then((d){_dictPNoun=jsonDecode(d);}),
+        rootBundle.loadString("assets/cjp.js/dict/kana.json")
+          .then((d){_dictKana=jsonDecode(d);}),
+        rootBundle.loadString("assets/cjp.js/dict/kanji.json")
+          .then((d){_dictKanji=jsonDecode(d);}),
+        rootBundle.loadString("assets/cjp.js/dict/emoji.json")
+          .then((d){_dictEmoji=jsonDecode(d);}),
+      ]);
+      _isDictReady=true;
+    }
   }
-  var data=_StrData(text: text,replaced: []);
-  data=_replace(data,_dictEmoji);
-  data=_replace(data,_dictPNoun);
-  data=_replace(data,_dictCommon);
-  data=_replace(data,_dictKana);
-  data=_replace(data,_dictKanji);
-  return data.text;
+  static String generate(String text) {
+    if(!_isDictReady){ // このコードをコピペする人用
+      loadDict();
+      return text;
+    }
+    if(text=="")return text;
+    var data=_StrData(text,[]);
+    data=_procStrDataWithDict(data,_dictEmoji!);
+    data=_procStrDataWithDict(data,_dictPNoun!);
+    data=_procStrDataWithDict(data,_dictCommon!);
+    data=_procStrDataWithDict(data,_dictKana!);
+    data=_procStrDataWithDict(data,_dictKanji!);
+    return data.text;
+  }
 }
 
 class _StrData {
-  _StrData({this.text="",this.replaced=const[]});
+  _StrData(this.text,this.processedIdx);
   String text;
-  var replaced;
+  List<IntPair> processedIdx;
 }
 
-class _Replaced {
-  _Replaced({required this.begin,required this.end});
-  int begin,end;
-}
-
-_StrData _replace(_StrData data,dict){
+_StrData _procStrDataWithDict(_StrData data,StrDict dict){
   if(data.text.length==0)return data;
-  for(final orig in dict){
-    final translateStr=[];
-    final re=RegExp(orig);
-    final splited=data.text.split(re);
-    var changed=false;
+  for(final reStr in dict.keys){
+    final RegExp re=RegExp(reStr);
+    final String correctStr=dict[reStr]!;
+    final List<String>
+      matched=re.allMatches(data.text).map((d)=>d[0]!).toList(),
+      unmatched=data.text.split(re);
 
-    for(var i=0;i<splited.length-1;i++){
-      final origStr=data.text.match(re)[i];
-      final correctStr=dict[orig];
+    List<String> result=[];
+    bool changed=false;
+    int cursor=0;
 
-      translateStr.add(splited[i]);
+    for(var i=0;i<matched.length;i++){
+      result.add(unmatched[i]);
+      cursor+=unmatched[i].length;
 
-      final begin=translateStr.join().length;
-      final origEnd=begin+origStr.length-1;
+      final String incorrectStr=matched[i];
+      final correctEnd=cursor+correctStr.length-1;
 
-      if(data.replaced.some((d)=>(d.begin<=begin&&begin<=d.end)
-                               ||(d.begin<=origEnd&&origEnd<=d.end))){
-        translateStr.add(origStr);
-        continue;
+      if(data.processedIdx.any((d)=>
+            (d.item1<=cursor&&cursor<=d.item2)
+          ||(d.item1<=correctEnd&&correctEnd<=d.item2))){
+        // 以前(別の正レい単語を)処理した範囲と被ってた場合
+        result.add(incorrectStr);
+        cursor+=incorrectStr.length;
       } else {
-        translateStr.add(correctStr);
+        result.add(correctStr);
+        data.processedIdx.add(IntPair(cursor,correctEnd));
         changed=true;
-        if(origStr.length==correctStr.length){
-          data.replaced.add({ begin: begin, end: origEnd });
-        } else {
-          final diffLen=correctStr.length-origStr.length;
-          data.replaced.add({ begin: begin, end: origEnd+diffLen });
-          data.replaced=data.replaced.map((d)=>begin<d.begin
-              ? { begin: d.begin+diffLen, end: d.end+diffLen }
-              : d);
+        if(correctStr.length!=incorrectStr.length){
+          // ずらさなければいけない
+          final diffLen=correctStr.length-incorrectStr.length;
+          data.processedIdx=data.processedIdx.map((d)=>cursor<d.item1
+            ? IntPair(d.item1+diffLen,d.item2+diffLen)
+            : d).toList();
         }
       }
     }
+
     if(changed){
-      translateStr.add(splited.slice(-1)[0]);
-      data.text=translateStr.join();
+      result.add(unmatched.last);
+      data.text=result.join();
     }
   }
   return data;

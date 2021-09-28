@@ -1,18 +1,19 @@
 name: cjp
 description: 怪レい日本语
-version: 0.1.0
+version: 1.0.0-beta0
 
 publish_to: 'none'
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.14.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  js: ^0.6.3
+  tuple: ^2.0.0
   share: ^2.0.4
   fluttertoast: ^8.0.8
+  package_info: ^2.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter
