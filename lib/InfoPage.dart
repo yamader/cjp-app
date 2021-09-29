@@ -17,21 +17,28 @@ class InfoPage extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              child: Column(
-                children: [
-                  _InfoContainer([
-                    _InfoRowSideBySide.textBoth("ほげ","ふが"),
-                  ]),
-                  _InfoContainer([
-                    _InfoRowSideBySide.textTitle(
-                      "ソースコード",
-                      _TextLink("github.com","https://github.com/yamader/cjp")),
-                  ])
-                ],
+              child: Container(
+                margin: EdgeInsets.only(top: 20),
+                child: Column(
+                  children: [
+                    _InfoContainer([
+                      _InfoRowSideBySide.textBoth("ほげ","ふが"),
+                    ]),
+                    _InfoContainer([
+                      _InfoRowSideBySide.textBoth("ほげ","ふが"),
+                      _InfoRowSideBySide.textBoth("ほげ","ふが"),
+                    ]),
+                    _InfoContainer([
+                      _InfoRowSideBySide.textTitle(
+                        "ソースコード",
+                        _TextLink("github.com","https://github.com/yamader/cjp-app")),
+                    ]),
+                  ],
+                ),
               ),
             ),
             Container(
-              margin: EdgeInsets.only(top: 10,bottom: 15,),
+              margin: EdgeInsets.only(top: 10,bottom: 35,),
               child: _TextLink(
                 "© 2021 YamaD",
                 "https://www.dyama.net",
@@ -56,9 +63,11 @@ class _InfoContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context)=>_children.length==0?SizedBox.shrink():
     Container(
-      child: Column(children: _children),
+      margin: EdgeInsets.symmetric(vertical: 10,horizontal: 20),
       decoration: BoxDecoration(
+        color: Colors.blue,
       ),
+      child: Column(children: _children),
     );
 }
 class _InfoRowSideBySide extends StatelessWidget {

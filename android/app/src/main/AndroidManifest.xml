@@ -7,7 +7,7 @@
         </intent>
    </queries>
    <application
-        android:label="cjp"
+        android:label="怪日语"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

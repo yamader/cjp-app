@@ -57,7 +57,10 @@ class _GeneratorPageState extends State<GeneratorPage> {
                   ),
                 );
               }
-              if(snapshot.hasData){
+              if(!snapshot.hasData){
+                // ローディング
+                return SizedBox.shrink();
+              } else {
                 if(!snapshot.data!) {
                   // そんなことはないと思うけど
                   Fluttertoast.showToast(msg: "辞書が読み込まれていません?!");
@@ -144,7 +147,7 @@ class _GeneratorPageState extends State<GeneratorPage> {
                       ),
                       Container(
                         margin: EdgeInsets.only(top: 20),
-                        height: 60,
+                        height: 65,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
@@ -158,16 +161,16 @@ class _GeneratorPageState extends State<GeneratorPage> {
                           alignment: AlignmentDirectional.center,
                           children: [
                             Container(
-                              height: 60,
+                              height: 65,
                               decoration: BoxDecoration(
                                 color: Colors.red,
                               ),
                             ),
                             Positioned(
-                              height: 110,
+                              height: 120,
                               child: Container(
-                                width: 110,
-                                height: 110,
+                                width: 120,
+                                height: 120,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: Colors.white,
@@ -225,9 +228,6 @@ class _GeneratorPageState extends State<GeneratorPage> {
                       ),
                     ],
                   );
-              }else{
-                // ローディング
-                return SizedBox.shrink();
               }
             },
           ),
