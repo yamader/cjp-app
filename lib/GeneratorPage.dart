@@ -30,8 +30,8 @@ class _GeneratorPageState extends State<GeneratorPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
+  Widget build(BuildContext context)=>
+    Scaffold(
         appBar: AppBar(
           title: Text("怪レい日本语 (軽い方)"),
           actions: [
@@ -42,155 +42,195 @@ class _GeneratorPageState extends State<GeneratorPage> {
           ],
         ),
         body: Center(
-          child: Column(
-            children: [
-              Expanded(
-                flex: 5,
-                child: Container(
-                  margin: EdgeInsets.only(left: 15,top: 20,right: 15,),
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffeeeeee),
-                        spreadRadius: 10,
-                        blurRadius: 25,
-                      ),
-                    ],
+          child: FutureBuilder(
+            future: CJP.loadDict(),
+            builder: (BuildContext context,AsyncSnapshot<bool> snapshot){
+              if(snapshot.hasError){
+                // 明らかなエラー
+                Fluttertoast.showToast(msg: "辞書を読み込めません?!");
+                return Text(
+                  "(՞ةڼ◔)",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 100,
+                    fontWeight: FontWeight.w900,
                   ),
-                  child: Scrollbar(
-                    child: TextField(
-                      controller: _inputTextController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      expands: true,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "変換する文章を入力...",
-                      ),
-                      onChanged: _changeText,
+                );
+              }
+              if(snapshot.hasData){
+                if(!snapshot.data!) {
+                  // そんなことはないと思うけど
+                  Fluttertoast.showToast(msg: "辞書が読み込まれていません?!");
+                  return Text(
+                    "(՞ةڼ◔)",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 100,
+                      fontWeight: FontWeight.w900,
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                flex: 5,
-                child: Container(
-                  margin: EdgeInsets.only(left: 15,top: 20,right: 15,),
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Color(0xffeeeeee),
-                        spreadRadius: 10,
-                        blurRadius: 25,
-                      ),
-                    ],
-                  ),
-                  child: Scrollbar(
-                    child: TextField(
-                      controller: _resTextController,
-                      maxLines: null,
-                      expands: true,
-                      readOnly: true,
-                      onTap: _clipCopy,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: "正レい日本语が出力されゑ!(予定)",
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                height: 60,
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xffeeeeee),
-                      spreadRadius: 0,
-                      blurRadius: 4,
-                    ),
-                  ],
-                ),
-                child: Stack(
-                  alignment: AlignmentDirectional.center,
-                  children: [
-                    Container(
-                      height: 60,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                      ),
-                    ),
-                    Positioned(
-                      height: 110,
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.white,
+                  );
+                }
+                return Column(
+                    children: [
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            left: 15, top: 20, right: 15,),
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0xffeeeeee),
+                                spreadRadius: 10,
+                                blurRadius: 25,
+                              ),
+                            ],
+                          ),
+                          child: Scrollbar(
+                            child: TextField(
+                              controller: _inputTextController,
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              expands: true,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "変換する文章を入力...",
+                              ),
+                              onChanged: _changeText,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                    Container(
-                      margin: EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () async {
-                              final data=await Clipboard.getData(Clipboard.kTextPlain);
-                              if(data?.text==null){
-                                Fluttertoast.showToast(msg: "Couldn't paste");
-                                return;
-                              } else if(data?.text==""){
-                                Fluttertoast.showToast(msg: "Clipboard empty");
-                                return;
-                              } else {
-                                _inputTextController.text=data?.text??""; // どうして……
-                                Fluttertoast.showToast(msg: "Pasted");
-                                _changeText(_inputTextController.text);
-                              }
-                            },
-                            icon: Icon(Icons.paste),
+                      Expanded(
+                        flex: 5,
+                        child: Container(
+                          margin: EdgeInsets.only(
+                            left: 15, top: 20, right: 15,),
+                          padding: EdgeInsets.symmetric(horizontal: 12),
+                          decoration: BoxDecoration(
                             color: Colors.white,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color(0xffeeeeee),
+                                spreadRadius: 10,
+                                blurRadius: 25,
+                              ),
+                            ],
                           ),
-                          IconButton(
-                            onPressed: (){
-                              if(_resTextController.text.length==0){
-                                Share.share("贵樣!");
-                                return;
-                              }
-                              Share.share(_resTextController.text);
-                            },
-                            icon: Icon(Icons.share),
+                          child: Scrollbar(
+                            child: TextField(
+                              controller: _resTextController,
+                              maxLines: null,
+                              expands: true,
+                              readOnly: true,
+                              onTap: _clipCopy,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "正レい日本语が出力されゑ!",
+                              ),
+                            ),
                           ),
-                          IconButton(
-                            onPressed: _clipCopy,
-                            icon: Icon(Icons.copy),
-                            color: Colors.white,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                      Container(
+                        margin: EdgeInsets.only(top: 20),
+                        height: 60,
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xffeeeeee),
+                              spreadRadius: 0,
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                        child: Stack(
+                          alignment: AlignmentDirectional.center,
+                          children: [
+                            Container(
+                              height: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                              ),
+                            ),
+                            Positioned(
+                              height: 110,
+                              child: Container(
+                                width: 110,
+                                height: 110,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                mainAxisAlignment:
+                                  MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  IconButton(
+                                    onPressed: () async {
+                                      final data = await Clipboard.getData(
+                                          Clipboard.kTextPlain);
+                                      if (data?.text == null) {
+                                        Fluttertoast.showToast(
+                                            msg: "Couldn't paste");
+                                        return;
+                                      } else if (data?.text == "") {
+                                        Fluttertoast.showToast(
+                                            msg: "Clipboard empty");
+                                        return;
+                                      } else {
+                                        _inputTextController.text =
+                                            data?.text ?? ""; // どうして……
+                                        Fluttertoast.showToast(msg: "Pasted");
+                                        _changeText(_inputTextController.text);
+                                      }
+                                    },
+                                    icon: Icon(Icons.paste),
+                                    color: Colors.white,
+                                  ),
+                                  IconButton(
+                                    onPressed: () {
+                                      if (_resTextController.text.length == 0) {
+                                        Share.share("贵樣!");
+                                        return;
+                                      }
+                                      Share.share(_resTextController.text);
+                                    },
+                                    icon: Icon(Icons.share),
+                                  ),
+                                  IconButton(
+                                    onPressed: _clipCopy,
+                                    icon: Icon(Icons.copy),
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+              }else{
+                // ローディング
+                return SizedBox.shrink();
+              }
+            },
           ),
-        )
+        ),
     );
-  }
 }

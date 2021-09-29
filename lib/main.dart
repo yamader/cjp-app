@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cjp/GeneratorPage.dart';
 import 'package:cjp/InfoPage.dart';
+import 'package:cjp/cjp.dart';
 
 void main() => runApp(App());
 

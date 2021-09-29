@@ -13,7 +13,7 @@ StrDict? _dictCommon,
          _dictEmoji;
 
 class CJP {
-  static Future<void> loadDict() async {
+  static Future<bool> loadDict() async {
     if(!_isDictReady) {
       await Future.wait([
         rootBundle.loadString("assets/cjp.js/dict/common.json")
@@ -29,6 +29,7 @@ class CJP {
       ]);
       _isDictReady=true;
     }
+    return Future<bool>(()=>_isDictReady);
   }
   static String generate(String text) {
     if(!_isDictReady){ // このコードをコピペする人用
