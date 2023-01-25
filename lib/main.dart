@@ -1,22 +1,25 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:cjp/GeneratorPage.dart';
-import 'package:cjp/InfoPage.dart';
-import 'package:cjp/cjp.dart';
+import "package:flutter/material.dart";
+import "package:flutter/services.dart";
+import "package:cjp/about.dart";
+import "package:cjp/generator.dart";
 
-void main() => runApp(App());
+void main() => runApp(const App());
 
 class App extends StatelessWidget {
+  const App({super.key});
+
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
+      systemNavigationBarColor: Colors.transparent,
     ));
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     return MaterialApp(
       title: "怪レい日本语",
       theme: ThemeData(
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
           backgroundColor: Colors.red,
           centerTitle: true,
           titleTextStyle: TextStyle(
@@ -32,10 +35,9 @@ class App extends StatelessWidget {
         ),
       ),
       routes: {
-        "/": (context) => GeneratorPage(),
-        "/info": (context) => InfoPage(),
+        "/": (_) => const GeneratorPage(),
+        "/about": (_) => const AboutPage(),
       },
-      initialRoute: '/',
     );
   }
 }
